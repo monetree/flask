@@ -1,63 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Flask
+from flask_restful import Resource, Api
+
 app = Flask(__name__)
+api = Api(app)
 
-stores = [
-    {
-        'name store': 'my wonderful',
-        'items': [
-            {
-                'name': 'my item',
-                'price': 15.99
-            }
-        ]
-    }
-]
+class Student(Resource):
+    def get(self, name):
+        return {'student': name}
+
+api.add_resource(Student, '/student/<string:name>')
 
 
-@app.route("/store/", methods=['post'])
-def create_store():
-    request_data = request.get_json()
-    new_store = {
-        'name': request_data['name'],
-        'items': []
-    }
-
-    stores.append(new_store)
-    return jsonify(new_store)
-
-@app.route("/store/<string:name>")
-def get_store(name):
-    for store in stores:
-        if store['name'] == name:
-            return jsonify(store)
-    return jsonify({'message':'store not found'})
-        
-
-@app.route("/store/")
-def get_stores():
-    return jsonify({'stores': stores})
-
-@app.route("/store/<string:name>/item", methods=['post'])
-def create_item_in_store(name):
-    request_data = request.get_json()
-    for store in stores:
-        if store['name'] == name:
-            new_item = {
-                'name': request_data['name'],
-                'price': request_data['price']
-            }
-            store['items'].append(new_item)
-            return jsonify(new_item)
-    return jsonify({"message":"store not found"})     
-
-@app.route("/store/<string:name>/item")
-def get_items_in_store(name):
-    for store in stores:
-        if store['name'] == name:
-            return jsonify({'items': store['items'])
-    return jsonify({'message':'item not found'})
-        
-
-
-app.run(port=4300)
-
+app.run(port=5000)
